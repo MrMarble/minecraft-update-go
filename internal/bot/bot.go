@@ -14,12 +14,14 @@ import (
 	"github.com/mrmarble/minecraft-update-go/pkg/version"
 )
 
+// Bot holds telegram information
 type Bot struct {
 	ChannelID string
 	LogID     string
 	Token     string
 }
 
+// Start runs the job once
 func (b *Bot) Start() {
 	latestManifest, err := manifest.GetLatest()
 	if err != nil {
