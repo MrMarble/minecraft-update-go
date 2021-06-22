@@ -15,7 +15,7 @@ jobs:
   golangci:
     strategy:
       matrix:
-        go-version: [1.14.x, 1.16.x]
+        go-version: [1.16.x]
     name: lint
     runs-on: ubuntu-latest
     steps:
@@ -26,23 +26,30 @@ jobs:
           version: v1.29
 
   build:
-    needs: golangci
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
       - uses: arduino/setup-task@v1
       - run: task build
 
   tests:
-    needs: golangci
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - uses: actions/checkout@v2
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
       - uses: arduino/setup-task@v1
       - run: task test
 
   release:
-    needs: golangci
+    needs: tests
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
 
