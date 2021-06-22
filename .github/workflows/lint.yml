@@ -25,6 +25,14 @@ jobs:
         with:
           version: v1.29
 
+  build:
+    needs: golangci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: arduino/setup-task@v1
+      - run: task build
+
   tests:
     needs: golangci
     runs-on: ubuntu-latest
