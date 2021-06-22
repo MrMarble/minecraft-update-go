@@ -21,11 +21,11 @@ func main() {
 	flag.Parse()
 
 	if channel == "" {
-		log.Println("Telegram channel ID required")
+		log.Println("Telegram channel ID required.")
 		os.Exit(1)
 	}
 	if token == "" {
-		log.Println("Telegram bot token required")
+		log.Println("Telegram bot token required.")
 		os.Exit(1)
 	}
 

@@ -31,14 +31,14 @@ func (b *Bot) Start() {
 
 	if err != nil {
 		log.Println("Local version not found.")
-		log.Println("Saving latest and exiting")
+		log.Println("Saving latest and exiting.")
 		latestVersion.Changelog = true
 		latestVersion.Save()
 		os.Exit(0)
 	}
 
 	if latestVersion.ID == localVersion.ID && localVersion.Changelog {
-		log.Println("Remote version same as local. Exiting")
+		log.Println("Remote version same as local. Exiting.")
 		os.Exit(0)
 	}
 
@@ -56,7 +56,7 @@ func (b *Bot) Start() {
 		log.Printf("Fetching changelog for %s", localVersion.ID)
 		changelog, err := changelog.FromURL(localVersion.ToURL())
 		if err != nil {
-			log.Println("Changelog is not published")
+			log.Println("Changelog is not published.")
 			os.Exit(0)
 		}
 		b.sendMessage(b.ChannelID, changelog.String())
