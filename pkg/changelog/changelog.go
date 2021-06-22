@@ -56,7 +56,7 @@ func (cl *Changelog) String() string {
 		result = append(result, "")
 		result = append(result, fmt.Sprintf("%s <strong>Fixed Bugs</strong>", emoji.Bug))
 		for _, b := range cl.Bugs {
-			result = append(result, fmt.Sprintf(" - %s - %s", b.ID, html.EscapeString(b.Desc)))
+			result = append(result, fmt.Sprintf(" - %s: %s", b.ID, html.EscapeString(b.Desc)))
 		}
 	}
 
