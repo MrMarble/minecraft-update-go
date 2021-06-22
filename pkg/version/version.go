@@ -12,7 +12,7 @@ import (
 	"github.com/mrmarble/minecraft-update-go/pkg/manifest"
 )
 
-const OutputFile = "latest_version.json"
+const outputFile = "latest_version.json"
 
 const (
 	// Snapshot is a weekly release
@@ -87,7 +87,7 @@ func (v *Version) Save() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	err = ioutil.WriteFile(OutputFile, marshaled, fs.ModePerm)
+	err = ioutil.WriteFile(outputFile, marshaled, fs.ModePerm)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -95,7 +95,7 @@ func (v *Version) Save() {
 
 // Load a Version from a file
 func Load() (*Version, error) {
-	file, err := ioutil.ReadFile(OutputFile)
+	file, err := ioutil.ReadFile(outputFile)
 	if err != nil {
 		return nil, err
 	}
