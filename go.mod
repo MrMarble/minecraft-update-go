@@ -2,4 +2,4 @@ module github.com/mrmarble/minecraft-update-go
 
 go 1.16
 
-require github.com/PuerkitoBio/goquery v1.7.0 // indirect
+require github.com/PuerkitoBio/goquery v1.7.0
