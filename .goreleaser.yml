@@ -12,6 +12,7 @@ builds:
       - windows
       - darwin
     main: ./cmd/minecraft
+    binary: minecraft
 archives:
   - replacements:
       darwin: Darwin
