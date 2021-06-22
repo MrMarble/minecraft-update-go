@@ -16,3 +16,8 @@ tasks:
   test:
     cmds:
       - go test -cover ./...
+
+  run:
+    cmds:
+      - go run cmd/minecraft/main.go {{.CLI_ARGS}}
+    silent: true
