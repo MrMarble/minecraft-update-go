@@ -29,7 +29,7 @@ type Changelog struct {
 }
 
 func (cl *Changelog) String() string {
-	result := []string{fmt.Sprintf("<a href='%s'>%s</a> <strong>%s</strong>", emoji.Link, cl.URL, html.EscapeString(cl.Title))}
+	result := []string{fmt.Sprintf("<a href='%s'>%s</a> <strong>%s</strong>", cl.URL, emoji.Link, html.EscapeString(cl.Title))}
 
 	if len(cl.New) > 0 {
 		result = append(result, "")
