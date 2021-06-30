@@ -61,6 +61,7 @@ func (b *Bot) Start() {
 			log.Println("Changelog is not published.")
 			os.Exit(0)
 		} else {
+			log.Println("Changelog updated.")
 			b.sendMessage(b.ChannelID, changelog.String())
 			latestVersion.Changelog = true
 		}
