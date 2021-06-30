@@ -59,11 +59,11 @@ func (b *Bot) Start() {
 		changelog, err := changelog.FromURL(localVersion.ToURL())
 		if err != nil {
 			log.Println("Changelog is not published.")
-			latestVersion.Save()
 			os.Exit(0)
+		} else {
+			b.sendMessage(b.ChannelID, changelog.String())
+			latestVersion.Changelog = true
 		}
-		b.sendMessage(b.ChannelID, changelog.String())
-		latestVersion.Changelog = true
 	}
 
 	latestVersion.Save()
