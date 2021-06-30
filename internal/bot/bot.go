@@ -22,20 +22,20 @@ type Bot struct {
 }
 
 // Start runs the job once
-func (b *Bot) Start() {
+func (b *Bot) Start(workingDir string) {
 	latestManifest, err := manifest.GetLatest()
 	if err != nil {
 		log.Fatalln("Error getting manifest from server.")
 	}
 	latestVersion := version.FromManifest(*latestManifest)
 
-	localVersion, err := version.Load()
+	localVersion, err := version.Load(workingDir)
 
 	if err != nil {
 		log.Println("Local version not found.")
 		log.Println("Saving latest and exiting.")
 		latestVersion.Changelog = true
-		latestVersion.Save()
+		latestVersion.Save(workingDir)
 		os.Exit(0)
 	}
 
@@ -67,7 +67,7 @@ func (b *Bot) Start() {
 		}
 	}
 
-	latestVersion.Save()
+	latestVersion.Save(workingDir)
 }
 
 func (b *Bot) sendMessage(chatID, message string) {

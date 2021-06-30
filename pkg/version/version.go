@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"io/ioutil"
 	"log"
+	"path"
 	"regexp"
 	"strings"
 
@@ -82,20 +83,20 @@ func FromManifest(m manifest.Manifest) Version {
 }
 
 // Save writes the Version to a json file
-func (v *Version) Save() {
+func (v *Version) Save(basePath string) {
 	marshaled, err := json.MarshalIndent(v, "", " ")
 	if err != nil {
 		log.Fatalln(err)
 	}
-	err = ioutil.WriteFile(outputFile, marshaled, fs.ModePerm)
+	err = ioutil.WriteFile(path.Join(basePath, outputFile), marshaled, fs.ModePerm)
 	if err != nil {
 		log.Fatalln(err)
 	}
 }
 
 // Load a Version from a file
-func Load() (*Version, error) {
-	file, err := ioutil.ReadFile(outputFile)
+func Load(basePath string) (*Version, error) {
+	file, err := ioutil.ReadFile(path.Join(basePath, outputFile))
 	if err != nil {
 		return nil, err
 	}
