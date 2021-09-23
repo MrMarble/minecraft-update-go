@@ -1,7 +1,6 @@
 package changelog
 
 import (
-	"errors"
 	"fmt"
 	"html"
 	"net/http"
@@ -76,7 +75,7 @@ func fetch(version string) (*goquery.Document, error) {
 		return nil, err
 	}
 	if resp.StatusCode != 200 {
-		return nil, errors.New("Changelong not found")
+		return nil, fmt.Errorf("Changelong not found. Error: %s", resp.Status)
 	}
 	defer resp.Body.Close()
 
