@@ -59,6 +59,7 @@ func (b *Bot) Start(workingDir string) {
 		changelog, err := changelog.FromURL(localVersion.ToURL())
 		if err != nil {
 			log.Println("Changelog is not published.")
+			log.Println(err)
 			os.Exit(0)
 		} else {
 			log.Println("Changelog updated.")
