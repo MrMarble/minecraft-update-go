@@ -71,6 +71,20 @@ func (b *Bot) Start(workingDir string) {
 	latestVersion.Save(workingDir)
 }
 
+// Parse runs the bot against a provided url
+func (b *Bot) Parse(url string) {
+	log.Printf("Fetching changelog from %s", url)
+		changelog, err := changelog.FromURL(url)
+		if err != nil {
+			log.Println("Changelog could not be reached.")
+			log.Println(err)
+			os.Exit(0)
+		} else {
+			log.Println("Changelog updated.")
+			b.sendMessage(b.ChannelID, changelog.String())
+		}
+}
+
 func (b *Bot) sendMessage(chatID, message string) {
 	values := map[string]string{
 		"chat_id":    chatID,

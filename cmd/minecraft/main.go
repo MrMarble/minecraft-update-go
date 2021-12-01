@@ -15,11 +15,13 @@ var (
 	logChannel = os.Getenv("MINE_LOG_CHANNEL")
 	token      = os.Getenv("MINE_TOKEN")
 	output     = os.Getenv("MINE_OUTPUT")
+	url        = ""
 	flagAlias  = map[string]string{
 		"channel": "c",
 		"output":  "o",
 		"log":     "l",
 		"token":   "t",
+		"url":     "u"
 	}
 )
 
@@ -29,11 +31,11 @@ func init() {
 	flag.StringVar(&logChannel, "log", logChannel, "Telegram log channel ID")
 	flag.StringVar(&token, "token", token, "Telegram bot token")
 	flag.StringVar(&output, "output", output, "Output directory. Defaults to CWD")
+	flag.StringVar(&url, "url", url, "Changelog URL to parse. Optional")
 
 	for from, to := range flagAlias {
 		flagSet := flag.Lookup(from)
 		flag.Var(flagSet.Value, to, fmt.Sprintf("alias to %s", flagSet.Name))
-
 	}
 
 	flag.Parse()
@@ -63,5 +65,10 @@ func main() {
 	defer f.Close()
 	log.SetOutput(f)
 
-	bot.Start(output)
+	if url == "" {
+		bot.Start(output)
+	} else {
+		bot.Parse(url)
+	}
+	
 }
