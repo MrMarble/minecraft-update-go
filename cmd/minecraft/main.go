@@ -21,7 +21,7 @@ var (
 		"output":  "o",
 		"log":     "l",
 		"token":   "t",
-		"url":     "u"
+		"url":     "u",
 	}
 )
 
