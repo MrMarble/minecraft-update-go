@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -64,19 +65,27 @@ func (cl *Changelog) String() string {
 
 func fetch(version string) (*goquery.Document, error) {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", URL(version), nil)
+	u, err := url.ParseRequestURI(version)
+	var url string
+	if err != nil {
+		url = URL(version)
+	} else {
+		url = u.String()
+	}
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/94.0")
-	req.Header.Set("Accept", "*/*")
+	req.Header.Set("user-agent", "insomnia/2021.6.0")
+	req.Header.Set("accept", "*/*")
+	req.Header.Set("Host", "www.minecraft.net")
 
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("Changelong not found. Error: %s", resp.Status)
+		return nil, fmt.Errorf("changelong not found. Error: %s. %s", resp.Status, url)
 	}
 	defer resp.Body.Close()
 
@@ -106,7 +115,7 @@ func FromURL(url string) (*Changelog, error) {
 	doc.Find("div.page-section--first h1 + ul").Each(func(i int, s *goquery.Selection) {
 		sectionTitle := s.Prev().Text()
 		switch {
-		case strings.HasPrefix(sectionTitle, "New"):
+		case strings.HasPrefix(sectionTitle, "New") || strings.HasPrefix(sectionTitle, "Features"):
 			s.Children().Each(func(i int, s *goquery.Selection) {
 				if i < 5 {
 					cl.New = append(cl.New, s.Text())
