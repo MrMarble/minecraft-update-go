@@ -15,10 +15,10 @@ builds:
     binary: minecraft
 dockers:
   - image_templates:
-    - ghcr.io/mrmarble/minecraft-update-bot:latest
-    - ghcr.io/mrmarble/minecraft-update-bot:{{.Tag}}
-    - ghcr.io/mrmarble/minecraft-update-bot:v{{.Major}}
-    - ghcr.io/mrmarble/minecraft-update-bot:v{{.Major}}.{{.Minor}}
+    - ghcr.io/mrmarble/minecraft-update-go:latest
+    - ghcr.io/mrmarble/minecraft-update-go:{{.Tag}}
+    - ghcr.io/mrmarble/minecraft-update-go:v{{.Major}}
+    - ghcr.io/mrmarble/minecraft-update-go:v{{.Major}}.{{.Minor}}
 archives:
   - replacements:
       darwin: Darwin
