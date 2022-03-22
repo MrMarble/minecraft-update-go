@@ -3,11 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
-	"path"
 
 	"github.com/mrmarble/minecraft-update-go/internal/bot"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 var (
@@ -39,16 +39,17 @@ func init() {
 	}
 
 	flag.Parse()
+
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 }
 
 func main() {
 	if channel == "" {
-		log.Println("Telegram channel ID required.")
-		os.Exit(1)
+		log.Fatal().Msg("Telegram channel ID is required.")
 	}
 	if token == "" {
-		log.Println("Telegram bot token required.")
-		os.Exit(1)
+		log.Fatal().Msg("Telegram BOT Token is required.")
 	}
 
 	bot := bot.Bot{
@@ -57,18 +58,10 @@ func main() {
 		Token:     token,
 	}
 
-	// Log to file
-	f, err := os.OpenFile(path.Join(output, "output.log"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer f.Close()
-	log.SetOutput(f)
-
 	if url == "" {
 		bot.Start(output)
 	} else {
 		bot.Parse(url)
 	}
-	
+
 }
