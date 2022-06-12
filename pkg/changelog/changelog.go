@@ -146,7 +146,6 @@ func FromURL(url string) (*Changelog, error) {
 			})
 
 		}
-
 	})
 	return &cl, nil
 }

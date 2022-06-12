@@ -26,7 +26,6 @@ var (
 )
 
 func init() {
-
 	flag.StringVar(&channel, "channel", channel, "Telegram notifications channel ID")
 	flag.StringVar(&logChannel, "log", logChannel, "Telegram log channel ID")
 	flag.StringVar(&token, "token", token, "Telegram bot token")
@@ -63,5 +62,4 @@ func main() {
 	} else {
 		bot.Parse(url)
 	}
-
 }

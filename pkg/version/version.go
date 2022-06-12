@@ -26,8 +26,10 @@ const (
 	ReleaseCandidate
 )
 
-var preRelease = regexp.MustCompile(`^(?:\d+|\.)+-pre\d+$`)
-var releaseCandidate = regexp.MustCompile(`^(?:\d+|\.)+-rc\d+$`)
+var (
+	preRelease       = regexp.MustCompile(`^(?:\d+|\.)+-pre\d+$`)
+	releaseCandidate = regexp.MustCompile(`^(?:\d+|\.)+-rc\d+$`)
+)
 
 var versionTypeFromString = map[string]Type{
 	"snapshot": Snapshot,

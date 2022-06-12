@@ -30,7 +30,6 @@ func (b *Bot) Start(workingDir string) {
 	latestVersion := version.FromManifest(*latestManifest)
 
 	localVersion, err := version.Load(workingDir)
-
 	if err != nil {
 		log.Info().Msg("Local version not found.")
 		log.Info().Interface("Remote Version", latestVersion).Msg("Saving remote and exiting.")
@@ -91,7 +90,6 @@ func (b *Bot) sendMessage(chatID, message string) {
 		"text":       message,
 	}
 	jsonData, err := json.Marshal(values)
-
 	if err != nil {
 		log.Fatal().AnErr("Err", err).Msg("Error marshalling message")
 	}
