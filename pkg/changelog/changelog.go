@@ -1,6 +1,7 @@
 package changelog
 
 import (
+	"context"
 	"fmt"
 	"html"
 	"net/http"
@@ -34,27 +35,34 @@ func (cl *Changelog) String() string {
 	if len(cl.New) > 0 {
 		result = append(result, "")
 		result = append(result, fmt.Sprintf("%s <strong>New Features</strong>", emoji.New))
+
 		for _, n := range cl.New {
 			result = append(result, fmt.Sprintf(" - %s", html.EscapeString(n)))
 		}
 	}
+
 	if len(cl.Changes) > 0 {
 		result = append(result, "")
 		result = append(result, fmt.Sprintf("%s <strong>Changes</strong>", emoji.Change))
+
 		for _, c := range cl.Changes {
 			result = append(result, fmt.Sprintf(" - %s", html.EscapeString(c)))
 		}
 	}
+
 	if len(cl.Technical) > 0 {
 		result = append(result, "")
 		result = append(result, fmt.Sprintf("%s <strong>Technical Changes</strong>", emoji.Technical))
+
 		for _, t := range cl.Technical {
 			result = append(result, fmt.Sprintf(" - %s", html.EscapeString(t)))
 		}
 	}
+
 	if len(cl.Bugs) > 0 {
 		result = append(result, "")
 		result = append(result, fmt.Sprintf("%s <strong>Fixed Bugs</strong>", emoji.Bug))
+
 		for _, b := range cl.Bugs {
 			result = append(result, fmt.Sprintf(" - %s: %s", b.ID, html.EscapeString(b.Desc)))
 		}
@@ -66,16 +74,22 @@ func (cl *Changelog) String() string {
 func fetch(version string) (*goquery.Document, error) {
 	client := &http.Client{}
 	u, err := url.ParseRequestURI(version)
+
 	var url string
+
 	if err != nil {
 		url = URL(version)
 	} else {
 		url = u.String()
 	}
-	req, err := http.NewRequest("GET", url, nil)
+
+	ctx := context.Background()
+
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
+
 	req.Header.Set("user-agent", "insomnia/2021.6.0")
 	req.Header.Set("accept", "*/*")
 	req.Header.Set("Host", "www.minecraft.net")
@@ -84,6 +98,7 @@ func fetch(version string) (*goquery.Document, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("changelong not found. Error: %s. %s", resp.Status, url)
 	}
@@ -93,6 +108,7 @@ func fetch(version string) (*goquery.Document, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return doc, nil
 }
 
@@ -147,6 +163,7 @@ func FromURL(url string) (*Changelog, error) {
 
 		}
 	})
+
 	return &cl, nil
 }
 

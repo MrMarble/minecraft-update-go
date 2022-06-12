@@ -49,6 +49,7 @@ type Version struct {
 // ToURL converts Version ID to URL for changelog
 func (v *Version) ToURL() string {
 	result := ""
+
 	switch v.Type {
 	case Snapshot:
 		result = fmt.Sprintf("snapshot-%s", v.ID)
@@ -63,6 +64,7 @@ func (v *Version) ToURL() string {
 		str := re.ReplaceAllString(v.ID, "$1-release-candidate-$2")
 		result = strings.ReplaceAll(str, ".", "-")
 	}
+
 	return result
 }
 
@@ -77,6 +79,7 @@ func FromManifest(m manifest.Manifest) Version {
 			t = ReleaseCandidate
 		}
 	}
+
 	return Version{
 		Type:      t,
 		ID:        m.Versions[0].Id,
@@ -90,6 +93,7 @@ func (v *Version) Save(basePath string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
 	err = ioutil.WriteFile(path.Join(basePath, outputFile), marshaled, fs.ModePerm)
 	if err != nil {
 		log.Fatalln(err)
@@ -104,6 +108,7 @@ func Load(basePath string) (*Version, error) {
 	}
 
 	var version Version
+
 	err = json.Unmarshal(file, &version)
 	if err != nil {
 		return nil, err

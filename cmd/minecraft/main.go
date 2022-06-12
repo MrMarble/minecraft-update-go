@@ -47,6 +47,7 @@ func main() {
 	if channel == "" {
 		log.Fatal().Msg("Telegram channel ID is required.")
 	}
+
 	if token == "" {
 		log.Fatal().Msg("Telegram BOT Token is required.")
 	}

@@ -27,6 +27,7 @@ func (b *Bot) Start(workingDir string) {
 	if err != nil {
 		log.Fatal().AnErr("Err", err).Msg("Error getting manifest from server.")
 	}
+
 	latestVersion := version.FromManifest(*latestManifest)
 
 	localVersion, err := version.Load(workingDir)
@@ -46,15 +47,18 @@ func (b *Bot) Start(workingDir string) {
 	// New version
 	if latestVersion.ID != localVersion.ID {
 		log.Info().Str("Version", latestVersion.ID).Msg("New version.")
+
 		if b.LogID != "" {
 			b.sendMessage(b.LogID, fmt.Sprintf("New Minecraft version: %s\nChangelog: %s", latestVersion.ID, changelog.URL(latestVersion.ToURL())))
 		}
+
 		localVersion = &latestVersion
 	}
 
 	// Update Changelog
 	if !localVersion.Changelog {
 		log.Info().Str("Version", latestVersion.ID).Msg("Fetching changelog.")
+
 		changelog, err := changelog.FromURL(localVersion.ToURL())
 		if err != nil {
 			log.Info().AnErr("Err", err).Msg("Changelog is not published. Exiting")
@@ -73,6 +77,7 @@ func (b *Bot) Start(workingDir string) {
 func (b *Bot) Parse(url string) {
 	log.Info().Str("url", url).Msg("Fetching changelog from url")
 	changelog, err := changelog.FromURL(url)
+
 	if err != nil {
 		log.Info().AnErr("Err", err).Msg("Changelog could not be reached. Exiting")
 		os.Exit(0)
@@ -89,6 +94,7 @@ func (b *Bot) sendMessage(chatID, message string) {
 		"parse_mode": "HTML",
 		"text":       message,
 	}
+
 	jsonData, err := json.Marshal(values)
 	if err != nil {
 		log.Fatal().AnErr("Err", err).Msg("Error marshalling message")
@@ -105,6 +111,7 @@ func (b *Bot) sendMessage(chatID, message string) {
 		if err != nil {
 			log.Fatal().AnErr("Err", err).Msg("Error reading HTTP response from Telegram")
 		}
+
 		log.Fatal().Str("response", string(body)).Msg("Telegram error.")
 	}
 }

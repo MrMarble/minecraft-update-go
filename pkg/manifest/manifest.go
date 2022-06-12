@@ -39,10 +39,13 @@ func GetLatest() (*Manifest, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	var manifest Manifest
+
 	err = json.Unmarshal(body, &manifest)
 	if err != nil {
 		return nil, err
 	}
+
 	return &manifest, nil
 }
