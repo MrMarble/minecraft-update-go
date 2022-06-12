@@ -25,7 +25,7 @@ var (
 	}
 )
 
-func init() {
+func main() {
 	flag.StringVar(&channel, "channel", channel, "Telegram notifications channel ID")
 	flag.StringVar(&logChannel, "log", logChannel, "Telegram log channel ID")
 	flag.StringVar(&token, "token", token, "Telegram bot token")
@@ -41,9 +41,7 @@ func init() {
 
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-}
 
-func main() {
 	if channel == "" {
 		log.Fatal().Msg("Telegram channel ID is required.")
 	}
