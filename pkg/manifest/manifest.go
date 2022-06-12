@@ -28,8 +28,8 @@ type Manifest struct {
 }
 
 // GetLatest fetch latest manifest from server
-func GetLatest() (*Manifest, error) {
-	resp, err := http.Get(manifestURL)
+func GetLatest(client *http.Client) (*Manifest, error) {
+	resp, err := client.Get(manifestURL)
 	if err != nil {
 		return nil, err
 	}

@@ -90,9 +90,8 @@ func fetch(version string) (*goquery.Document, error) {
 		return nil, err
 	}
 
-	req.Header.Set("user-agent", "insomnia/2021.6.0")
-	req.Header.Set("accept", "*/*")
-	req.Header.Set("Host", "www.minecraft.net")
+	req.Header.Set("user-agent", "FeedFetcher-Google")
+	req.Header.Set("cache-control", "no-cache")
 
 	resp, err := client.Do(req)
 	if err != nil {
