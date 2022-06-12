@@ -22,7 +22,7 @@ type Bot struct {
 }
 
 // Start runs the job once
-func (b *Bot) Start(workingDir string) {
+func (b *Bot) Start(workingDir string) error {
 	latestManifest, err := manifest.GetLatest()
 	if err != nil {
 		log.Fatal().AnErr("Err", err).Msg("Error getting manifest from server.")
@@ -36,12 +36,14 @@ func (b *Bot) Start(workingDir string) {
 		log.Info().Interface("Remote Version", latestVersion).Msg("Saving remote and exiting.")
 		latestVersion.Changelog = true
 		latestVersion.Save(workingDir)
-		os.Exit(0)
+
+		return nil
 	}
 
 	if latestVersion.ID == localVersion.ID && localVersion.Changelog {
 		log.Info().Interface("Version", localVersion).Msg("Remote version same as local. Exiting.")
-		os.Exit(0)
+
+		return nil
 	}
 
 	// New version
@@ -62,7 +64,7 @@ func (b *Bot) Start(workingDir string) {
 		changelog, err := changelog.FromURL(localVersion.ToURL())
 		if err != nil {
 			log.Info().AnErr("Err", err).Msg("Changelog is not published. Exiting")
-			os.Exit(0)
+			return nil
 		} else {
 			log.Info().Str("Title", changelog.Title).Msg("Changelog found.")
 			b.sendMessage(b.ChannelID, changelog.String())
@@ -71,6 +73,8 @@ func (b *Bot) Start(workingDir string) {
 	}
 
 	latestVersion.Save(workingDir)
+
+	return nil
 }
 
 // Parse runs the bot against a provided url
@@ -109,9 +113,10 @@ func (b *Bot) sendMessage(chatID, message string) {
 	if resp.StatusCode != 200 {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			log.Fatal().AnErr("Err", err).Msg("Error reading HTTP response from Telegram")
+			log.Warn().AnErr("Err", err).Msg("Error reading HTTP response from Telegram")
+			return
 		}
 
-		log.Fatal().Str("response", string(body)).Msg("Telegram error.")
+		log.Warn().Str("response", string(body)).Msg("Telegram error.")
 	}
 }
