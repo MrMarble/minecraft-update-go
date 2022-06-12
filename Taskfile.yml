@@ -4,18 +4,46 @@ version: "3"
 
 tasks:
   build:
+    desc: Build the binary
+    sources:
+      - ./**/*.go
+    generates:
+      - ./minecraft
     cmds:
-      - go build -o dist/ -v ./...
-    silent: true
+      - go build ./cmd/minecraft
 
   fmt:
+    desc: gofumpt all code
     cmds:
-      - go vet ./...
-      - go fmt ./...
+      - gofumpt -w -l .
 
   test:
+    desc: Run tests
+    env:
+      LC_ALL: C
+    vars:
+      TEST_OPTIONS: '{{default "" .TEST_OPTIONS}}'
+      SOURCE_FILES: '{{default "./..." .SOURCE_FILES}}'
+      TEST_PATTERN: '{{default "." .TEST_PATTERN}}'
     cmds:
-      - go test -cover ./...
+      - go test {{.TEST_OPTIONS}} -failfast -race -coverpkg=./... -covermode=atomic -coverprofile=coverage.txt {{.SOURCE_FILES}} -run {{.TEST_PATTERN}} -timeout=5m
+
+  cover:
+    desc: Open the cover tool
+    cmds:
+      - go tool cover -html=coverage.txt
+
+  lint:
+    desc: Lint the code with golangci-lint
+    cmds:
+      - golangci-lint run --fix ./...
+
+  ci:
+    desc: Run all CI steps
+    cmds:
+      - task: lint
+      - task: test
+      - task: build
 
   run:
     cmds:
