@@ -1,0 +1,19 @@
+linters:
+  enable:
+    - bodyclose
+    - contextcheck
+    - gocognit
+    - decorder
+    - dupl
+    - durationcheck
+    - errname
+    - errorlint
+    - funlen
+    - goimports
+    - goconst
+    - gocritic
+    - gofumpt
+    - ireturn
+    - noctx
+    - prealloc
+    - wsl
