@@ -23,7 +23,7 @@ type Bot struct {
 
 // Start runs the job once
 func (b *Bot) Start(workingDir string) error {
-	latestManifest, err := manifest.GetLatest()
+	latestManifest, err := manifest.GetLatest(http.DefaultClient)
 	if err != nil {
 		log.Fatal().AnErr("Err", err).Msg("Error getting manifest from server.")
 	}
