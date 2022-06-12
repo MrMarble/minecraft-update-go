@@ -2,3 +2,4 @@ dist/
 *.json
 *.log
 coverage.txt
+/.task
