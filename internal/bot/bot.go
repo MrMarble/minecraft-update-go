@@ -7,7 +7,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"time"
 
+	"github.com/mrmarble/minecraft-update-go/internal/try"
 	"github.com/mrmarble/minecraft-update-go/pkg/changelog"
 	"github.com/mrmarble/minecraft-update-go/pkg/manifest"
 	"github.com/mrmarble/minecraft-update-go/pkg/version"
@@ -21,60 +23,96 @@ type Bot struct {
 	Token     string
 }
 
+type Context struct {
+	manifest      *manifest.Manifest
+	latestVersion version.Version
+	localVersion  version.Version
+}
+
 // Start runs the job once
-func (b *Bot) Start(workingDir string) error {
-	latestManifest, err := manifest.GetLatest(http.DefaultClient)
+func (b *Bot) Start(workingDir string) {
+	ctx := &Context{}
+	fetchManifest(ctx)
+	loadLocalVersion(ctx, workingDir)
+	compareVersion(ctx, b)
+	updateChangelog(ctx, b)
+
+	ctx.latestVersion.Save(workingDir)
+}
+
+func fetchManifest(ctx *Context) {
+	// Fetch latest manifest from minecraft api
+	var latestManifest *manifest.Manifest
+
+	err := try.Do(func(attempt int) (bool, error) {
+		var err error
+		latestManifest, err = manifest.GetLatest(http.DefaultClient)
+		time.Sleep(30 * time.Second)
+		return attempt < 3, err
+	})
 	if err != nil {
 		log.Fatal().AnErr("Err", err).Msg("Error getting manifest from server.")
 	}
 
-	latestVersion := version.FromManifest(*latestManifest)
+	ctx.manifest = latestManifest
+}
+
+func loadLocalVersion(ctx *Context, workingDir string) {
+	ctx.latestVersion = version.FromManifest(*ctx.manifest)
 
 	localVersion, err := version.Load(workingDir)
 	if err != nil {
 		log.Info().Msg("Local version not found.")
-		log.Info().Interface("Remote Version", latestVersion).Msg("Saving remote and exiting.")
-		latestVersion.Changelog = true
-		latestVersion.Save(workingDir)
-
-		return nil
+		log.Info().Interface("Remote Version", ctx.latestVersion).Msg("Saving remote and exiting.")
+		ctx.latestVersion.Changelog = true
+		ctx.latestVersion.Save(workingDir)
+		os.Exit(0)
 	}
 
-	if latestVersion.ID == localVersion.ID && localVersion.Changelog {
+	if ctx.latestVersion.ID == localVersion.ID && localVersion.Changelog {
 		log.Info().Interface("Version", localVersion).Msg("Remote version same as local. Exiting.")
-
-		return nil
+		os.Exit(0)
 	}
 
+	ctx.localVersion = *localVersion
+}
+
+func compareVersion(ctx *Context, b *Bot) {
 	// New version
-	if latestVersion.ID != localVersion.ID {
-		log.Info().Str("Version", latestVersion.ID).Msg("New version.")
+	if ctx.latestVersion.ID != ctx.localVersion.ID {
+		log.Info().Str("Version", ctx.latestVersion.ID).Msg("New version.")
 
 		if b.LogID != "" {
-			b.sendMessage(b.LogID, fmt.Sprintf("New Minecraft version: %s\nChangelog: %s", latestVersion.ID, changelog.URL(latestVersion.ToURL())))
+			b.sendMessage(b.LogID, fmt.Sprintf("New Minecraft version: %s\nChangelog: %s", ctx.latestVersion.ID, changelog.URL(ctx.latestVersion.ToURL())))
 		}
 
-		localVersion = &latestVersion
+		ctx.localVersion = ctx.latestVersion
 	}
+}
 
+func updateChangelog(ctx *Context, b *Bot) {
 	// Update Changelog
-	if !localVersion.Changelog {
-		log.Info().Str("Version", latestVersion.ID).Msg("Fetching changelog.")
+	if !ctx.localVersion.Changelog {
+		log.Info().Str("Version", ctx.latestVersion.ID).Msg("Fetching changelog.")
 
-		changelog, err := changelog.FromURL(localVersion.ToURL())
+		var chlog *changelog.Changelog
+
+		err := try.Do(func(attempt int) (bool, error) {
+			var err error
+			chlog, err = changelog.FromURL(ctx.latestVersion.ToURL())
+			time.Sleep(5 * time.Minute)
+			return attempt < 3, err
+		})
+
 		if err != nil {
 			log.Info().AnErr("Err", err).Msg("Changelog is not published. Exiting")
-			return nil
+			os.Exit(0)
 		} else {
-			log.Info().Str("Title", changelog.Title).Msg("Changelog found.")
-			b.sendMessage(b.ChannelID, changelog.String())
-			latestVersion.Changelog = true
+			log.Info().Str("Title", chlog.Title).Msg("Changelog found.")
+			b.sendMessage(b.ChannelID, chlog.String())
+			ctx.latestVersion.Changelog = true
 		}
 	}
-
-	latestVersion.Save(workingDir)
-
-	return nil
 }
 
 // Parse runs the bot against a provided url

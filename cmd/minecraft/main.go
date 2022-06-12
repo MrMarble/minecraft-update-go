@@ -57,9 +57,7 @@ func main() {
 	}
 
 	if url == "" {
-		if err := bot.Start(output); err != nil {
-			log.Fatal().Err(err).Msg("Error starting bot.")
-		}
+		bot.Start(output)
 	} else {
 		bot.Parse(url)
 	}

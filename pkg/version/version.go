@@ -70,19 +70,23 @@ func (v *Version) ToURL() string {
 
 // FromManifest instanciates a Version from the latest published version on manifest
 func FromManifest(m manifest.Manifest) Version {
-	t := versionTypeFromString[m.Versions[0].Type]
+	return FromManifestVersion(m.Versions[0])
+}
+
+func FromManifestVersion(v manifest.Version) Version {
+	t := versionTypeFromString[v.Type]
 	if t == Snapshot {
 		switch {
-		case preRelease.MatchString(m.Versions[0].Id):
+		case preRelease.MatchString(v.Id):
 			t = PreRelease
-		case releaseCandidate.MatchString(m.Versions[0].Id):
+		case releaseCandidate.MatchString(v.Id):
 			t = ReleaseCandidate
 		}
 	}
 
 	return Version{
 		Type:      t,
-		ID:        m.Versions[0].Id,
+		ID:        v.Id,
 		Changelog: false,
 	}
 }
