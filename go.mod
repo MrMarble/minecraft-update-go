@@ -16,5 +16,5 @@ require (
 require (
 	github.com/andybalholm/cascadia v1.1.0 // indirect
 	github.com/stretchr/testify v1.7.2
-	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d // indirect
+	golang.org/x/net v0.7.0 // indirect
 )
